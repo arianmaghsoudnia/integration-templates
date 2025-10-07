@@ -60,6 +60,9 @@ location-ingestion-valid-and-invalid-payload:
         - ingestionId: RouterInfo1-1$400146
           value: 3.0
           date: 2024-03-27T22:48:20.000+00:00
+        - ingestionId: RouterInfo1-1$location
+          value: { "lat": 50.0, "lon": 3.0, "alt": 0 }
+          date: 2024-03-27T22:48:20.000+00:00
         - ingestionId: RouterInfo2-1$400144
           value: 55.0
           date: 2024-03-27T22:50:00.000+00:00
@@ -69,6 +72,19 @@ location-ingestion-valid-and-invalid-payload:
         - ingestionId: RouterInfo3-1$400146
           value: 6.0
           date: 2024-03-27T22:52:00.000+00:00
-        - ingestionId: RouterInfo1-1$location
-          value: { "lat": 50.0, "lon": 3.0, "alt": 0 }
-          date: 2024-03-27T22:48:20.000+00:00
+
+register-info-missing-map-warn:
+    description: Should log warn when register info not found and value will not be validated
+    payload: ./payloads/registerInfoMissingPayload.json
+    expectedLogs:
+        - level: WARN
+          message: Register info not found for addr 999 (subject=RouterInfoX-1, metric=400999). Value will not be validated.
+    expectedMeasurements:
+
+value-with-wrong-data-type-payload:
+    description: Should log warn when register info not found and value will not be validated
+    payload: ./payloads/valueWithWrongDataType.json
+    expectedLogs:
+        - level: WARN
+          message: 'Unable to parse value for addr 6 (subject=bx-test-server-1, metric=400006). Invalid data type: expected integer, got "should be number"'
+    expectedMeasurements:

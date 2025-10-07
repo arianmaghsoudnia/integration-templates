@@ -435,36 +435,6 @@ const registerMap = {
     }
 };
 
-function parseValue(record) {
-
-    if (!record || !record.data) {
-        return record?.data;
-    }
-
-    const registerInfo = registerMap[record.addr];
-
-    if (!registerInfo) {
-        return record.data;
-    }
-
-    const repr = registerInfo.representation.toLowerCase();
-
-    // Should be parsed as number metric value
-    if (repr.includes('integer')) {
-        const parsed = parseInt(record.data, 10);
-        return Number.isNaN(parsed) ? record.data : parsed;
-    } else if (repr.includes('float')) {
-        const parsed = parseFloat(record.data);
-        return Number.isNaN(parsed) ? record.data : parsed;
-    }
-    // Should be parsed as text metric value
-    if (repr.includes('ascii')) {
-        return record.data.toString();
-    }
-
-    // If no specific format matched, return the original value
-    return record.data;
-}
 
 function convertPayload(payload, context) {
 
@@ -502,40 +472,76 @@ function convertPayload(payload, context) {
         const ingestionId = `${subjectExternal}$${metricExternal}`;
         const ingestionDate = date(record.timestamp * 1000);
 
-        const parsedValue = parseValue(record);
-        if (parsedValue !== null && parsedValue !== undefined) {
-            context.addMeasurement(ingestionId, parsedValue, ingestionDate);
-        }
+        let parsedValue = null;
+        const data = record.data;
+        const registerInfo = registerMap[record.addr];
 
-        // Collect lat/lon to combine and add later
-        if (record.addr === 144 || record.addr === 146) {
-            let entry = locationPerSubject.get(subjectExternal);
-            if (!entry) {
-                entry = { lat: null, lon: null, latDate: null, lonDate: null };
-                locationPerSubject.set(subjectExternal, entry);
-            }
-            if (record.addr === 144) {
-                entry.lat = parsedValue;
-                entry.latDate = record.timestamp;
+        if (!registerInfo) {
+            // Warn but still ingest it without validation
+            context.logWarn(`Register info not found for addr ${record.addr} (subject=${subjectExternal}, metric=${metricExternal}). Value will not be validated.`);
+
+        } else {
+            const repr = String(registerInfo.representation || '').toLowerCase();
+
+            if (repr.includes('integer')) {
+                const parsed = parseInt(data, 10);
+                if (!Number.isNaN(parsed)) {
+                    parsedValue = parsed;
+                } else {
+                    context.logWarn(`Unable to parse value for addr ${record.addr} (subject=${subjectExternal}, metric=${metricExternal}). Invalid data type: expected integer, got "${data}"`);
+                }
+            } else if (repr.includes('float')) {
+                const parsed = parseFloat(data);
+                if (!Number.isNaN(parsed)) {
+                    parsedValue = parsed;
+                } else {
+                    context.logWarn(`Unable to parse value for addr ${record.addr} (subject=${subjectExternal}, metric=${metricExternal}). Invalid data type: expected float, got "${data}"`);
+                }
+            } else if (repr.includes('ascii')) {
+                parsedValue = data.toString();
             } else {
-                entry.lon = parsedValue;
-                entry.lonDate = record.timestamp;
+                context.logWarn(`Unable to parse value for addr ${record.addr} (subject=${subjectExternal}, metric=${metricExternal}). Unsupported representation: ${registerInfo.representation}`);
             }
-        }
-    }
 
-    // Ingest if collected GPS data exists with the same date for each subject
-    for (const [subjectExternal, entry] of locationPerSubject.entries()) {
-        if (
-            entry.lat != null &&
-            entry.lon != null &&
-            entry.latDate != null &&
-            entry.lonDate != null &&
-            entry.latDate === entry.lonDate
-        ) {
-            const locationId = `${subjectExternal}$location`;
-            const locationValue = { lat: entry.lat, lon: entry.lon, alt: 0 };
-            context.addMeasurement(locationId, locationValue, date(entry.latDate * 1000));
+
+            if (parsedValue !== null) {
+                context.addMeasurement(ingestionId, parsedValue, ingestionDate);
+
+                // Collect lat/lon to combine and add later
+                if (record.addr === 144 || record.addr === 146) {
+                    let entry = locationPerSubject.get(subjectExternal);
+                    if (!entry) {
+                        entry = { lat: null, lon: null, latDate: null, lonDate: null };
+                        locationPerSubject.set(subjectExternal, entry);
+                    }
+                    if (record.addr === 144) {
+                        entry.lat = parsedValue;
+                        entry.latDate = record.timestamp;
+                    } else {
+                        entry.lon = parsedValue;
+                        entry.lonDate = record.timestamp;
+                    }
+                }
+            }
+
+
+        }
+
+        // Ingest if collected GPS data exists with the same date for each subject
+        for (const [subjectExternal, entry] of locationPerSubject.entries()) {
+            if (
+                entry.lat != null &&
+                entry.lon != null &&
+                entry.latDate != null &&
+                entry.lonDate != null &&
+                entry.latDate === entry.lonDate
+            ) {
+                const locationId = `${subjectExternal}$location`;
+                const locationValue = { lat: entry.lat, lon: entry.lon, alt: 0 };
+                context.addMeasurement(locationId, locationValue, date(entry.latDate * 1000));
+                // remove so we don't emit again
+                locationPerSubject.delete(subjectExternal);
+            }
         }
     }
 }
