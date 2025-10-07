@@ -450,11 +450,13 @@ function parseValue(record) {
     const repr = registerInfo.representation.toLowerCase();
 
     // Should be parsed as number metric value
-    if (repr.includes('bit') && (repr.includes('integer') || repr.includes('unsigned') || repr.includes('float'))) {
+    if (repr.includes('integer')) {
+        const parsed = parseInt(record.data, 10);
+        return Number.isNaN(parsed) ? record.data : parsed;
+    } else if (repr.includes('float')) {
         const parsed = parseFloat(record.data);
-        return isNaN(parsed) ? record.data : parsed;
+        return Number.isNaN(parsed) ? record.data : parsed;
     }
-
     // Should be parsed as text metric value
     if (repr.includes('ascii')) {
         return record.data.toString();
@@ -501,8 +503,7 @@ function convertPayload(payload, context) {
         const ingestionDate = date(record.timestamp * 1000);
 
         const parsedValue = parseValue(record);
-
-        if (!isNaN(parsedValue) && isFinite(parsedValue)) {
+        if (parsedValue !== null && parsedValue !== undefined) {
             context.addMeasurement(ingestionId, parsedValue, ingestionDate);
         }
 

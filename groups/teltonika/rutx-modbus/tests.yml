@@ -1,9 +1,12 @@
 default:
-    description: Should parse RouterData records and add numeric measurements
+    description: Should parse RouterData records and add measurements
     payload: ./payloads/validPayload.json
     expectedMeasurements:
         - ingestionId: RouterInfo-1$400040
           value: "1122577335"
+          date: 2024-03-27T22:48:20.000+00:00
+        - ingestionId: RouterInfo-1$400072
+          value: "TRB255"
           date: 2024-03-27T22:48:20.000+00:00
         - ingestionId: RouterInfo-1$400144
           value: 50.976974
