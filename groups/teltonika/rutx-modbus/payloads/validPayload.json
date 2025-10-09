@@ -1,0 +1,68 @@
+{
+    "RouterData": [
+        {
+            "timestamp": 1711579700,
+            "date": "27/03/2024 23: 48: 20",
+            "bdate": null,
+            "server_id": 1,
+            "bserver_id": 1,
+            "addr": 40,
+            "baddr": null,
+            "full_addr": "400040",
+            "size": 12,
+            "data": "1122577335",
+            "raw_data": null,
+            "server_name": "RouterInfo",
+            "ip": "127.0.0.1",
+            "name": "RouterSerial"
+        },
+        {
+            "timestamp": 1711579700,
+            "date": "27/03/2024 23: 48: 20",
+            "bdate": null,
+            "server_id": 1,
+            "bserver_id": 1,
+            "addr": 72,
+            "baddr": null,
+            "full_addr": "400072",
+            "size": 8,
+            "data": "TRB255",
+            "raw_data": null,
+            "server_name": "RouterInfo",
+            "ip": "127.0.0.1",
+            "name": "RouterName"
+        },
+        {
+            "timestamp": 1711579700,
+            "date": "27/03/2024 23: 48: 20",
+            "bdate": null,
+            "server_id": 1,
+            "bserver_id": 1,
+            "addr": 144,
+            "baddr": null,
+            "full_addr": "400144",
+            "size": 9,
+            "data": "50.976974",
+            "raw_data": null,
+            "server_name": "RouterInfo",
+            "ip": "127.0.0.1",
+            "name": "GPSLat"
+        },
+        {
+            "timestamp": 1711579700,
+            "date": "27/03/2024 23: 48: 20",
+            "bdate": null,
+            "server_id": 1,
+            "bserver_id": 1,
+            "addr": 146,
+            "baddr": null,
+            "full_addr": "400146",
+            "size": 8,
+            "data": "3.199957",
+            "raw_data": null,
+            "server_name": "RouterInfo",
+            "ip": "127.0.0.1",
+            "name": "GPSLong"
+        }
+    ]
+}

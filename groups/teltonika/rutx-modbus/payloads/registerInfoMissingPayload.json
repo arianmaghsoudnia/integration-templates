@@ -1,0 +1,20 @@
+{
+    "RouterData": [
+        {
+            "timestamp": 1711579800,
+            "date": "27/03/2024 23:50:00",
+            "bdate": null,
+            "server_id": 1,
+            "bserver_id": 1,
+            "addr": 999,
+            "baddr": null,
+            "full_addr": "400999",
+            "size": 4,
+            "data": "123",
+            "raw_data": null,
+            "server_name": "RouterInfoX",
+            "ip": "127.0.0.1",
+            "name": "Unknown"
+        }
+    ]
+}

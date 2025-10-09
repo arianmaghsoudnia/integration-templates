@@ -1,0 +1,10 @@
+{
+    "blockbax_test_connector": {
+        "timestamp": 1759754146,
+        "date_iso_8601": "2025-10-06T14:35:46+0200",
+        "server_name": "bx-test-server",
+        "server_id": 1,
+        "full_addr": "400006",
+        "data": "310"
+    }
+}

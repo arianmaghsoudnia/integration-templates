@@ -1,0 +1,21 @@
+{
+    "corrupted_data_server": [
+        {
+            "timestamp": 1759754146,
+            "date": "06/10/2025 14:35:46",
+            "date_iso_8601": "2025-10-06T14:35:46+0200",
+            "bdate": null,
+            "server_id": 1,
+            "bserver_id": 1,
+            "addr": 6,
+            "baddr": null,
+            "full_addr": "400006",
+            "size": 3,
+            "data": "should be number",
+            "raw_data": null,
+            "server_name": "bx-test-server",
+            "ip": "127.0.0.1",
+            "name": "temperature_request"
+        }
+    ]
+}
